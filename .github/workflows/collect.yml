@@ -31,16 +31,20 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y skopeo
-    
-      - name: Skopeo Login
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: DSO Login
         run: |
-          # skopeo login registry1.dso.mil -u ${{ vars.REGISTRY_USER }} -p ${{ secrets.REGISTRY_TOKEN }}
-          skopeo login docker.io -u ${{ vars.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          skopeo login registry1.dso.mil -u ${{ vars.REGISTRY_USER }} -p ${{ secrets.REGISTRY_TOKEN }}
       
       - name: Run Skopeo Sync
         run: |
           skopeo sync \
-              --src-creds=${{ vars.REGISTRY_USER }}:${{ secrets.REGISTRY_TOKEN }} \
               --src yaml --dest dir ${{ vars.COLLECTOR }}.yml ${{ vars.COLLECTOR }}
               
       - name: TARchive Skopeo Output
