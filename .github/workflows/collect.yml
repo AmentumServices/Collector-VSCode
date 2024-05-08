@@ -207,7 +207,7 @@ jobs:
         uses: rickstaa/action-create-tag@v1
         id: tag_create
         with:
-          tag: ${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}
+          tag: ${{ needs.Date.outputs.Date }}
           github_token: ${{secrets.GITHUB_TOKEN}}
           tag_exists_error: false
           message: "Release for ${{ needs.Date.outputs.Date }} VSC v${{ vars.VSCVER }} run"
@@ -217,7 +217,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ vars.COLLECTOR }} ${{ vars.VSCVER }} ${{ needs.Date.outputs.Date }}
-          tag_name: ${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}
+          tag_name: ${{ needs.Date.outputs.Date }}
           make_latest: true
           files: |
             *.bundle
