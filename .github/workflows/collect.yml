@@ -107,7 +107,7 @@ jobs:
         run: |  
           tar -cvz --remove-files \
             -f ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz \
-            artifacts\extensions artifacts/*.json \
+            artifacts/extensions artifacts/*.json \
             | tee ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt && \
           ls -alh ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz*
 
@@ -115,7 +115,7 @@ jobs:
         run: |  
           tar -cvz --remove-files \
             -f ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz \
-            artifacts\installers \
+            artifacts/installers \
             | tee ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt && \
           ls -alh ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz*
 
