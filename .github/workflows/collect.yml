@@ -120,28 +120,28 @@ jobs:
         with:
           name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
-          if-no-files-found: fail
+          if-no-files-found: error
       
       - name: Upload extension TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
-          if-no-files-found: fail
+          if-no-files-found: error
 
       - name: Upload Installers TARchive
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
-          if-no-files-found: fail
+          if-no-files-found: error
       
       - name: Upload TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
-          if-no-files-found: fail
+          if-no-files-found: error
 
   Code:
     needs: [Date]
