@@ -135,6 +135,13 @@ jobs:
           echo "Directory Contents"
           ls -lah artifacts/
 
+      - name: Delete Extensions
+        run: |
+          echo "Remove Extension directory"
+          rm -rf archive/extensions
+          echo "Directory Contents"
+          ls -lah artifacts/
+
       - name: TARchive VSCsync Binary Artifacts
         run: |  
           tar -cvz --remove-files \
