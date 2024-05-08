@@ -84,7 +84,7 @@ jobs:
         run: |
           docker run \
             -v $PWD/artifacts:/artifacts \
-            -e SYNCARGS="--frequency 0 --check-specified-extensions --update-extensions --update-binaries" \
+            -e SYNCARGS="--frequency 0 --check-specified-extensions --update-extensions --update-binaries --vscode-version ${{ vars.VSCVER }}" \
             lolinternet/vscsync
 
       - name: Reset Permissions due to container as root
@@ -95,29 +95,29 @@ jobs:
           ls -lah artifacts/
 
       - name: Create json ZIP
-        run: zip -jD ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip artifacts/*.json
+        run: zip -jD ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip artifacts/*.json
 
       - name: Upload jsons
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip
-          path: ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip
+          name: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
+          path: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
 
       - name: TARchive VSCsync Extension Artifacts
         run: |  
           tar -cvz --remove-files \
-            -f ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz \
+            -f ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz \
             artifacts/extensions artifacts/*.json \
-            | tee ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt && \
-          ls -alh ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz*
+            | tee ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt && \
+          ls -alh ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz*
 
       - name: TARchive VSCsync Installer Artifacts
         run: |  
           tar -cvz --remove-files \
-            -f ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz \
+            -f ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz \
             artifacts/installers \
-            | tee ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt && \
-          ls -alh ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz*
+            | tee ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt && \
+          ls -alh ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz*
 
       - name: List remaining files in artifacts
         run: |
@@ -127,29 +127,29 @@ jobs:
       - name: Upload extension TARchive
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
+          name: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
           if-no-files-found: error
       
       - name: Upload extension TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
+          name: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
       - name: Upload Installers TARchive
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
+          name: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
           if-no-files-found: error
       
       - name: Upload TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
+          name: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
   Code:
@@ -207,17 +207,17 @@ jobs:
         uses: rickstaa/action-create-tag@v1
         id: tag_create
         with:
-          tag: ${{ needs.Date.outputs.Date }}
+          tag: ${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}
           github_token: ${{secrets.GITHUB_TOKEN}}
           tag_exists_error: false
-          message: "Release for ${{ needs.Date.outputs.Date }} run"
+          message: "Release for ${{ needs.Date.outputs.Date }} VSC v${{ vars.VSCVER }} run"
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ vars.COLLECTOR }} ${{ needs.Date.outputs.Date }}
-          tag_name: ${{ needs.Date.outputs.Date }}
+          name: ${{ vars.COLLECTOR }} ${{ vars.VSCVER }} ${{ needs.Date.outputs.Date }}
+          tag_name: ${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}
           make_latest: true
           files: |
             *.bundle
