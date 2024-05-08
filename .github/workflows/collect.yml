@@ -45,8 +45,8 @@ jobs:
               
       - name: TARchive Skopeo Output
         run: |  
-          tar -cvzf ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz ${{ vars.COLLECTOR }}
-          ls -alh ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz
+          tar -cvzf ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz ${{ vars.COLLECTOR }}
+          ls -alh ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
 
       - name: Directory Contents
         run: |
@@ -56,8 +56,8 @@ jobs:
       - name: Upload TARchive
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz
+          name: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
 
   Sync:
     needs: [Date]
@@ -72,13 +72,15 @@ jobs:
       - name: Sync
         id: docker_run_sync
         run: |
-          mkdir ./artifacts
-          docker run -v ./artifacts/:/artifacts/ -e SYNCARGS=--sync lolinternet/vscsync
+          docker run \
+            -v ./artifacts/:/artifacts/ \
+            -e SYNCARGS="--syncall --frequency 0" \
+            lolinternet/vscsync
 
-      - name: TARchive Skopeo Output
+      - name: TARchive VSCsync Artifacts
         run: |  
-          tar -cvzf ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz ${{ vars.COLLECTOR }}
-          ls -alh ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz
+          tar -cvzf ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz artifacts
+          ls -alh ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz
 
       - name: Directory Contents
         run: |
@@ -88,8 +90,8 @@ jobs:
       - name: Upload TARchive
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz
+          name: ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz
   Code:
     needs: [Date]
     runs-on: ubuntu-latest
@@ -157,5 +159,5 @@ jobs:
           tag_name: ${{ needs.Date.outputs.Date }}
           make_latest: true
           files: |
-            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle
-            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.tgz
+            *.bundle
+            *.tgz
