@@ -145,7 +145,7 @@ jobs:
           path: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
           if-no-files-found: error
       
-      - name: Upload TARchive Inventory
+      - name: Upload Installers TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
