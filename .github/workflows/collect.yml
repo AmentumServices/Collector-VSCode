@@ -45,7 +45,8 @@ jobs:
               
       - name: TARchive Skopeo Output
         run: |  
-          tar -cvzf ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz ${{ vars.COLLECTOR }}
+          tar -cvz --remove-files \
+            -f ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz ${{ vars.COLLECTOR }}
           ls -alh ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
 
       - name: Directory Contents
@@ -79,8 +80,9 @@ jobs:
 
       - name: TARchive VSCsync Artifacts
         run: |  
-          tar -cvzf ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz artifacts\
-          | tee ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz.txt
+          tar -cvz --remove-files \
+            -f ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz artifacts\
+            | tee ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz.txt
           ls -alh ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz*
 
       - name: Directory Contents
