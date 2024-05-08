@@ -108,7 +108,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.json
-          path: archive/*.json
+          path: artifacts/*.json
 
   SyncBinaries:
     needs: [Date]
@@ -165,7 +165,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.json
-          path: archive/*.json
+          path: artifacts/*.json
 
   Code:
     needs: [Date]
