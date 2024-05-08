@@ -75,7 +75,7 @@ jobs:
         run: |
           docker run \
             -v ./artifacts/:/artifacts/ \
-            -e SYNCARGS="--sync --frequency 0  --total-recommended 50 --check-specified-extensions" \
+            -e SYNCARGS="--sync --frequency 0 --check-specified-extensions \
             lolinternet/vscsync
 
       - name: Reset Permissions due to container as root
