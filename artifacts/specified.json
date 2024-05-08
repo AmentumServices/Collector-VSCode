@@ -1,5 +1,6 @@
 {
     "extensions": [
+        "atlassian.atlascode",
         "bierner.github-markdown-preview",
         "bierner.markdown-checkbox",
         "bierner.markdown-emoji",
@@ -7,6 +8,8 @@
         "bierner.markdown-mermaid",
         "bierner.markdown-preview-github-styles",
         "bierner.markdown-yaml-preamble",
+        "checkmarx.ast-results",
+        "checkmarx.cxvscode",
         "dbaeumer.vscode-eslint",
         "eamodio.gitlens",
         "esbenp.prettier-vscode",
@@ -15,6 +18,10 @@
         "github.vscode-github-actions",
         "github.vscode-pull-request-github",
         "gitlab.gitlab-workflow",
+        "hashicorp.hcl",
+        "hashicorp.terraform",
+        "johnpapa.vscode-peacock",
+        "mindaro-dev.file-downloader",
         "ms-azuretools.vscode-docker",
         "ms-kubernetes-tools.vscode-kubernetes-tools",
         "ms-python.debugpy",
@@ -33,13 +40,17 @@
         "ms-vscode.remote-explorer",
         "ms-vscode.remote-repositories",
         "ms-vscode.remote-server",
+        "redhat.ansible",
         "redhat.java",
+        "redhat.vscode-commons",
+        "redhat.vscode-xml",
         "redhat.vscode-yaml",
         "twxs.cmake",
         "vscjava.vscode-gradle",
         "vscjava.vscode-java-debug",
         "vscjava.vscode-java-dependency",
         "vscjava.vscode-java-test",
-        "vscjava.vscode-maven"
+        "vscjava.vscode-maven",
+        "vscode-icons-team.vscode-icons"
     ]
 }
