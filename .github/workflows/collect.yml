@@ -81,11 +81,11 @@ jobs:
       - name: Reset Permissions due to container as root
         run: |
           echo "Show permissons"
-          ls -lahR artifacts
+          ls -lah artifacts/*
           echo "Reset Permissions"
-          sudo chown -R $USERNAME artifacts
+          sudo chown -R runner:docker artifacts
           echo "Directory Contents"
-          ls -lahR artifacts
+          ls -lah artifacts/*
 
       - name: TARchive VSCsync Artifacts
         run: |  
