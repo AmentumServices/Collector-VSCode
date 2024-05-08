@@ -74,13 +74,15 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Files in artifacts
-        run: ls -lah artifacts/
+        run: |
+          echo $PWD
+          ls -lah artifacts/
           
       - name: Sync Extensions
         id: docker_run_sync
         run: |
           docker run \
-            -v $PWD/artifacts:/artifacts:z \
+            -v $PWD/artifacts:/artifacts \
             -e SYNCARGS="--sync --frequency 0 --check-specified-extensions" \
             lolinternet/vscsync
 
