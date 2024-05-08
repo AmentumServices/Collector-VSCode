@@ -84,7 +84,7 @@ jobs:
         run: |
           docker run \
             -v $PWD/artifacts:/artifacts \
-            -e SYNCARGS="--frequency 0 --check-specified-extensions --check-binaries" \
+            -e SYNCARGS="--frequency 0 --check-specified-extensions --update-extensions --update-binaries" \
             lolinternet/vscsync
 
       - name: Reset Permissions due to container as root
