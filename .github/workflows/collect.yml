@@ -4,7 +4,8 @@ on:
     branches: []
   release:
     types: [edited, released]
-
+  schedule:
+    - cron: '0 0 * * 1' # Update weekly on Monday Midnight
 jobs:
   Date:
     runs-on: ubuntu-latest
@@ -19,7 +20,7 @@ jobs:
           echo -e "\nWrote to file:\n$GITHUB_OUTPUT\n"
           echo "Values:"
           cat $GITHUB_OUTPUT
-          
+
   Skopeo:
     needs: [Date]
     runs-on: ubuntu-latest
@@ -53,11 +54,6 @@ jobs:
             -f ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz ${{ vars.COLLECTOR }}
           ls -alh ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
 
-      - name: Directory Contents
-        run: |
-          echo "Directory Contents"
-          ls -lahR ${{ vars.COLLECTOR }}
-
       - name: Upload TARchive
         uses: actions/upload-artifact@v4
         with:
@@ -82,17 +78,21 @@ jobs:
             -e SYNCARGS="--sync --frequency 0  --total-recommended 50 --check-specified-extensions" \
             lolinternet/vscsync
 
+      - name: Reset Permissions due to container as root
+        run: |
+          echo "Show permissons"
+          ls -lahR artifacts
+          echo "Reset Permissions"
+          sudo chown -R $USERNAME artifacts
+          echo "Directory Contents"
+          ls -lahR artifacts
+
       - name: TARchive VSCsync Artifacts
         run: |  
           tar -cvz --remove-files \
             -f ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz artifacts\
             | tee ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz.txt
           ls -alh ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz*
-
-      - name: Directory Contents
-        run: |
-          echo "Directory Contents"
-          ls -lahR
 
       - name: Upload TARchive
         uses: actions/upload-artifact@v4
