@@ -74,7 +74,7 @@ jobs:
         run: |
           docker run \
             -v ./artifacts/:/artifacts/ \
-            -e SYNCARGS="--syncall --frequency 0" \
+            -e SYNCARGS="--sync --frequency 0" \
             lolinternet/vscsync
 
       - name: TARchive VSCsync Artifacts
