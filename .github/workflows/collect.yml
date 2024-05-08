@@ -41,17 +41,22 @@ jobs:
 
       - name: DSO Login
         run: |
-          skopeo login registry1.dso.mil -u ${{ vars.REGISTRY_USER }} -p ${{ secrets.REGISTRY_TOKEN }}
+          skopeo login registry1.dso.mil \
+            -u ${{ vars.REGISTRY_USER }} \
+            -p ${{ secrets.REGISTRY_TOKEN }}
       
       - name: Run Skopeo Sync
         run: |
           skopeo sync \
-              --src yaml --dest dir ${{ vars.COLLECTOR }}.yml ${{ vars.COLLECTOR }}
+            --src yaml --dest dir \
+            ${{ vars.COLLECTOR }}.yml \
+            ${{ vars.COLLECTOR }}
               
       - name: TARchive Skopeo Output
         run: |  
           tar -cvz --remove-files \
-            -f ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz ${{ vars.COLLECTOR }}
+            -f ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz \
+            ${{ vars.COLLECTOR }} && \
           ls -alh ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
 
       - name: Upload TARchive
@@ -59,6 +64,7 @@ jobs:
         with:
           name: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
 
   VSCodeSync:
     needs: [Date]
@@ -102,7 +108,7 @@ jobs:
           tar -cvz --remove-files \
             -f ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz \
             artifacts\extensions artifacts/*.json \
-            | tee ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
+            | tee ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt && \
           ls -alh ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz*
 
       - name: TARchive VSCsync Installer Artifacts
@@ -110,7 +116,7 @@ jobs:
           tar -cvz --remove-files \
             -f ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz \
             artifacts\installers \
-            | tee ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
+            | tee ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt && \
           ls -alh ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz*
 
       - name: List remaining files in artifacts
@@ -172,6 +178,7 @@ jobs:
         with:
           name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle
           path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle
+          if-no-files-found: error
 
   Release:
     runs-on: ubuntu-latest
