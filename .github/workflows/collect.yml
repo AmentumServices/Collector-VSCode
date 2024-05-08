@@ -34,7 +34,7 @@ jobs:
     
       - name: Skopeo Login
         run: |
-          skopeo login registry1.dso.mil -u ${{ vars.REGISTRY_USER }} -p ${{ secrets.REGISTRY_TOKEN }}
+          # skopeo login registry1.dso.mil -u ${{ vars.REGISTRY_USER }} -p ${{ secrets.REGISTRY_TOKEN }}
           skopeo login docker.io -u ${{ vars.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_TOKEN }}
       
       - name: Run Skopeo Sync
@@ -51,7 +51,7 @@ jobs:
       - name: Directory Contents
         run: |
           echo "Directory Contents"
-          ls -lahR
+          ls -lahR ${{ vars.COLLECTOR }}
 
       - name: Upload TARchive
         uses: actions/upload-artifact@v4
@@ -74,13 +74,14 @@ jobs:
         run: |
           docker run \
             -v ./artifacts/:/artifacts/ \
-            -e SYNCARGS="--sync --frequency 0" \
+            -e SYNCARGS="--sync --frequency 0  --total-recommended 50 --check-specified-extensions" \
             lolinternet/vscsync
 
       - name: TARchive VSCsync Artifacts
         run: |  
-          tar -cvzf ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz artifacts
-          ls -alh ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz
+          tar -cvzf ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz artifacts\
+          | tee ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz.txt
+          ls -alh ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz*
 
       - name: Directory Contents
         run: |
@@ -92,6 +93,13 @@ jobs:
         with:
           name: ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz
+      
+      - name: Upload TARchive Inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz.txt
+
   Code:
     needs: [Date]
     runs-on: ubuntu-latest
@@ -161,3 +169,4 @@ jobs:
           files: |
             *.bundle
             *.tgz
+            *.tgz.txt
