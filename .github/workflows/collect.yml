@@ -104,6 +104,12 @@ jobs:
           name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
 
+      - name: Upload jsons
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.json
+          path: archive/*.json
+
   SyncBinaries:
     needs: [Date]
     runs-on: ubuntu-latest
@@ -146,7 +152,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz.txt
+
+      - name: Upload jsons
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.json
+          path: archive/*.json
 
   Code:
     needs: [Date]
