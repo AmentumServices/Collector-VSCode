@@ -60,7 +60,7 @@ jobs:
           name: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
 
-  Sync:
+  SyncExtensions:
     needs: [Date]
     runs-on: ubuntu-latest
     steps:
@@ -70,12 +70,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           
-      - name: Sync
+      - name: Sync Extensions
         id: docker_run_sync
         run: |
           docker run \
             -v ./artifacts/:/artifacts/ \
-            -e SYNCARGS="--sync --frequency 0  --total-recommended 50 --check-specified-extensions" \
+            -e SYNCARGS="--sync --frequency 0  --total-recommended 0 --check-specified-extensions --skip-binaries" \
             lolinternet/vscsync
 
       - name: Reset Permissions due to container as root
@@ -85,24 +85,68 @@ jobs:
           echo "Directory Contents"
           ls -lah artifacts/
 
-      - name: TARchive VSCsync Artifacts
+      - name: TARchive VSCsync Extension Artifacts
         run: |  
           tar -cvz --remove-files \
-            -f ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz artifacts\
-            | tee ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz.txt
-          ls -alh ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz*
+            -f ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz artifacts\
+            | tee ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
+          ls -alh ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz*
 
-      - name: Upload TARchive
+      - name: Upload extension TARchive
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz
+          name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
+      
+      - name: Upload extension TARchive Inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
+
+  SyncBinaries:
+    needs: [Date]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v2 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Sync Binaries
+        id: docker_run_sync
+        run: |
+          docker run \
+            -v ./artifacts/:/artifacts/ \
+            -e SYNCARGS="--sync --frequency 0  --total-recommended 0" \
+            lolinternet/vscsync
+
+      - name: Reset Permissions due to container as root
+        run: |
+          echo "Reset Permissions"
+          sudo chown -R runner:docker artifacts
+          echo "Directory Contents"
+          ls -lah artifacts/
+
+      - name: TARchive VSCsync Binary Artifacts
+        run: |  
+          tar -cvz --remove-files \
+            -f ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz artifacts\
+            | tee ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz.txt
+          ls -alh ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz*
+
+      - name: Upload binaries TARchive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz
       
       - name: Upload TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-artifacts-${{ needs.Date.outputs.Date }}.tgz.txt
+          name: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz
 
   Code:
     needs: [Date]
@@ -133,7 +177,7 @@ jobs:
 
   Release:
     runs-on: ubuntu-latest
-    needs: [Date, Code, Skopeo, Sync]
+    needs: [Date, Code, Skopeo, SyncBinaries, SyncExtensions]
     permissions:
       contents: write
       pull-requests: read
