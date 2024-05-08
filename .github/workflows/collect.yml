@@ -60,7 +60,7 @@ jobs:
           name: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
 
-  SyncExtensions:
+  VSCodeSync:
     needs: [Date]
     runs-on: ubuntu-latest
     steps:
@@ -75,7 +75,7 @@ jobs:
         run: |
           docker run \
             -v ./artifacts/:/artifacts/ \
-            -e SYNCARGS="--sync --frequency 0  --total-recommended 50 --check-specified-extensions --skip-binaries" \
+            -e SYNCARGS="--sync --frequency 0  --total-recommended 50 --check-specified-extensions" \
             lolinternet/vscsync
 
       - name: Reset Permissions due to container as root
@@ -85,12 +85,32 @@ jobs:
           echo "Directory Contents"
           ls -lah artifacts/
 
+      - name: Upload jsons
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.json
+          path: artifacts/*.json
+
       - name: TARchive VSCsync Extension Artifacts
         run: |  
           tar -cvz --remove-files \
-            -f ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz artifacts\
+            -f ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz \
+            artifacts\extensions artifacts/*.json \
             | tee ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
           ls -alh ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz*
+
+      - name: TARchive VSCsync Installer Artifacts
+        run: |  
+          tar -cvz --remove-files \
+            -f ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz \
+            artifacts\installers \
+            | tee ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
+          ls -alh ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz*
+
+      - name: List remaining files in artifacts
+        run: |
+          echo "Directory Contents"
+          ls -lah artifacts/
 
       - name: Upload extension TARchive
         uses: actions/upload-artifact@v4
@@ -104,68 +124,17 @@ jobs:
           name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
 
-      - name: Upload jsons
+      - name: Upload Installers TARchive
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.json
-          path: artifacts/*.json
-
-  SyncBinaries:
-    needs: [Date]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Login to DockerHub
-        uses: docker/login-action@v2 
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
-      - name: Sync Binaries
-        id: docker_run_sync
-        run: |
-          docker run \
-            -v ./artifacts/:/artifacts/ \
-            -e SYNCARGS="--sync --frequency 0  --total-recommended 1" \
-            lolinternet/vscsync
-
-      - name: Reset Permissions due to container as root
-        run: |
-          echo "Reset Permissions"
-          sudo chown -R runner:docker artifacts
-          echo "Directory Contents"
-          ls -lah artifacts/
-
-      - name: Delete Extensions
-        run: |
-          echo "Remove Extension directory"
-          rm -rf archive/extensions
-          echo "Directory Contents"
-          ls -lah artifacts/
-
-      - name: TARchive VSCsync Binary Artifacts
-        run: |  
-          tar -cvz --remove-files \
-            -f ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz artifacts\
-            | tee ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz.txt
-          ls -alh ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz*
-
-      - name: Upload binaries TARchive
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz
+          name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
       
       - name: Upload TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.tgz.txt
-
-      - name: Upload jsons
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ vars.COLLECTOR }}-binaries-${{ needs.Date.outputs.Date }}.json
-          path: artifacts/*.json
+          name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
 
   Code:
     needs: [Date]
@@ -196,7 +165,7 @@ jobs:
 
   Release:
     runs-on: ubuntu-latest
-    needs: [Date, Code, Skopeo, SyncBinaries, SyncExtensions]
+    needs: [Date, Code, Skopeo, VSCodeSync]
     permissions:
       contents: write
       pull-requests: read
@@ -237,3 +206,4 @@ jobs:
             *.bundle
             *.tgz
             *.tgz.txt
+            *.json
