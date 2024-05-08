@@ -85,11 +85,14 @@ jobs:
           echo "Directory Contents"
           ls -lah artifacts/
 
+      - name: Create json ZIP
+        run: zip -jD ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip archive/*.json
+
       - name: Upload jsons
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.json
-          path: artifacts/*.json
+          name: ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip
+          path: ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip
 
       - name: TARchive VSCsync Extension Artifacts
         run: |  
@@ -117,24 +120,28 @@ jobs:
         with:
           name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: fail
       
       - name: Upload extension TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: fail
 
       - name: Upload Installers TARchive
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: fail
       
       - name: Upload TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: fail
 
   Code:
     needs: [Date]
@@ -206,4 +213,4 @@ jobs:
             *.bundle
             *.tgz
             *.tgz.txt
-            *.json
+            *.zip
