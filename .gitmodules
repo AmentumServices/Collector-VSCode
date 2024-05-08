@@ -1,0 +1,3 @@
+[submodule "vscodeoffline"]
+	path = vscodeoffline
+	url = git@github.com:JacobsFederal/vscodeoffline.git
