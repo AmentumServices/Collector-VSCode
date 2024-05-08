@@ -86,7 +86,7 @@ jobs:
           ls -lah artifacts/
 
       - name: Create json ZIP
-        run: zip -jD ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip archive/*.json
+        run: zip -jD ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip artifacts/*.json
 
       - name: Upload jsons
         uses: actions/upload-artifact@v4
