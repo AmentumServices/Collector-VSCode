@@ -20,6 +20,7 @@
         "gitlab.gitlab-workflow",
         "hashicorp.hcl",
         "hashicorp.terraform",
+        "jebbs.plantuml",
         "johnpapa.vscode-peacock",
         "mindaro-dev.file-downloader",
         "ms-azuretools.vscode-docker",
