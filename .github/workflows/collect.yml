@@ -74,7 +74,7 @@ jobs:
         id: docker_run_sync
         run: |
           docker run \
-            -v ./artifacts/:/artifacts/ \
+            -v ./artifacts:/artifacts:U \
             -e SYNCARGS="--sync --frequency 0 --check-specified-extensions" \
             lolinternet/vscsync
 
