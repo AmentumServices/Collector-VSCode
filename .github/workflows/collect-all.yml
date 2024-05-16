@@ -20,6 +20,7 @@ jobs:
           cat $GITHUB_OUTPUT
       - name: Container space?
         run: |
+          sudo fdisk -l /dev/sd*
           df -h
           pwd
 
@@ -49,7 +50,9 @@ jobs:
 
       - name: Container space?
         run: |
+          sudo fdisk -l /dev/sd*
           df -h
+          sudo ls -alh /mnt/*
           pwd
           
       - name: Run Skopeo Sync
@@ -91,6 +94,18 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Container space?
+        run: |
+          sudo fdisk -l /dev/sd*
+          df -h
+          sudo ls -alh /mnt/*
+          pwd
+
+      - name: Setup dir in mnt
+        run: |
+          sudo chown -R runner:docker /mnt
+          sudo mkdir /mnt/artifacts
           
       - name: Run Sync
         id: docker_run_sync
