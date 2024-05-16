@@ -18,11 +18,15 @@ jobs:
           echo -e "\nWrote to file:\n$GITHUB_OUTPUT\n"
           echo "Values:"
           cat $GITHUB_OUTPUT
-      - name: Container space?
+          
+      - name: VM space?
         run: |
           sudo fdisk -l /dev/sd*
           df -h
           pwd
+          
+      - name: VM Warning
+        run: cat /mnt/DATALOSS_WARNING_README.txt
 
   Skopeo:
     needs: [Date]
@@ -88,13 +92,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Container space?
+      - name: VM space?
         run: |
           sudo fdisk -l /dev/sd*
           df -h
           sudo ls -alh /mnt/*
           pwd
-
+          
+      - name: VM Warning
+        run: cat /mnt/DATALOSS_WARNING_README.txt
+        
       - name: Setup dir in mnt
         run: |
           sudo chown -R runner:docker /mnt
