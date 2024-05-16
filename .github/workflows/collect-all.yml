@@ -19,7 +19,9 @@ jobs:
           echo "Values:"
           cat $GITHUB_OUTPUT
       - name: Container space?
-        run: df -h
+        run: |
+          df -h
+          pwd
 
   Skopeo:
     needs: [Date]
@@ -44,7 +46,12 @@ jobs:
           skopeo login registry1.dso.mil \
             -u ${{ vars.REGISTRY_USER }} \
             -p ${{ secrets.REGISTRY_TOKEN }}
-      
+
+      - name: Container space?
+        run: |
+          df -h
+          pwd
+          
       - name: Run Skopeo Sync
         run: |
           skopeo sync \
@@ -72,7 +79,9 @@ jobs:
     steps:
       - name: Container space?
         run: |
+          fdisk -l /dev/sd*
           df -h
+          pwd
     
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -87,7 +96,7 @@ jobs:
         id: docker_run_sync
         run: |
           docker run \
-            -v $PWD/artifacts:/artifacts \
+            -v /mnt/artifacts:/artifacts \
             -e SYNCARGS="--syncall --skip-binaries" \
             lolinternet/vscsync
 
@@ -96,10 +105,10 @@ jobs:
           echo "Reset Permissions"
           sudo chown -R runner:docker artifacts
           echo "Directory Contents"
-          ls -lah artifacts/
+          ls -lah /mnt/artifacts/
 
       - name: Create json ZIP
-        run: zip -jD ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip artifacts/*.json
+        run: zip -jD ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip /mnt/artifacts/*.json
 
       - name: Upload jsons
         uses: actions/upload-artifact@v4
@@ -109,7 +118,7 @@ jobs:
 
       - name: TARchive VSCsync Extension Artifacts
         run: |  
-          tar -cvz --remove-files \
+          tar -cvz --remove-files -C /mnt \
             -f ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz \
             artifacts/extensions artifacts/*.json \
             | tee ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt && \
@@ -117,7 +126,7 @@ jobs:
 
       - name: TARchive VSCsync Installer Artifacts
         run: |  
-          tar -cvz --remove-files \
+          tar -cvz --remove-files -C /mnt \
             -f ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz \
             artifacts/installers \
             | tee ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt && \
