@@ -47,13 +47,6 @@ jobs:
           skopeo login registry1.dso.mil \
             -u ${{ vars.REGISTRY_USER }} \
             -p ${{ secrets.REGISTRY_TOKEN }}
-
-      - name: Container space?
-        run: |
-          sudo fdisk -l /dev/sd*
-          df -h
-          sudo ls -alh /mnt/*
-          pwd
           
       - name: Run Skopeo Sync
         run: |
@@ -82,7 +75,7 @@ jobs:
     steps:
       - name: Container space?
         run: |
-          fdisk -l /dev/sd*
+          sudo fdisk -lh /dev/sd*
           df -h
           pwd
     
