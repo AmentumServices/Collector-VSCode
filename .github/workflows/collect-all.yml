@@ -18,6 +18,8 @@ jobs:
           echo -e "\nWrote to file:\n$GITHUB_OUTPUT\n"
           echo "Values:"
           cat $GITHUB_OUTPUT
+      - name: Container space?
+        run: df -h
 
   Skopeo:
     needs: [Date]
@@ -68,6 +70,10 @@ jobs:
     needs: [Date]
     runs-on: ubuntu-latest
     steps:
+      - name: Container space?
+        run: |
+          df -h
+    
       - name: Check out repository code
         uses: actions/checkout@v4
     
