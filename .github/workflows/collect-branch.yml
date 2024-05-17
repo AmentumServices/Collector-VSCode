@@ -1,0 +1,181 @@
+name: Branch Collection
+on:
+  push:
+    branches-ignore:
+      - main
+  release:
+    types: [edited, released]
+
+jobs:
+  Date:
+    runs-on: ubuntu-latest
+    outputs:
+      Date: ${{ steps.date.outputs.date }}
+    steps:
+      - name: Get current date
+        id: DATE
+        run: |
+          echo "Setting Date"
+          echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+          echo -e "\nWrote to file:\n$GITHUB_OUTPUT\n"
+          echo "Values:"
+          cat $GITHUB_OUTPUT
+
+  Skopeo:
+    needs: [Date]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        
+      - name: Install Skopeo
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y skopeo
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: DSO Login
+        run: |
+          skopeo login registry1.dso.mil \
+            -u ${{ vars.REGISTRY_USER }} \
+            -p ${{ secrets.REGISTRY_TOKEN }}
+      
+      - name: Run Skopeo Sync
+        run: |
+          skopeo sync \
+            --src yaml --dest dir \
+            ${{ vars.COLLECTOR }}.yml \
+            ${{ vars.COLLECTOR }}
+              
+      - name: TARchive Skopeo Output
+        run: |  
+          tar -cvz --remove-files \
+            -f ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz \
+            ${{ vars.COLLECTOR }} && \
+          ls -alh ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
+
+      - name: Upload TARchive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
+
+  VSCodeSync:
+    needs: [Date]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+    
+      - name: Login to DockerHub
+        uses: docker/login-action@v3 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Run Sync
+        id: docker_run_sync
+        run: |
+          docker run \
+            -v $PWD/artifacts:/artifacts \
+            -e SYNCARGS="--frequency 0 --check-specified-extensions --update-extensions --update-binaries --vscode-version ${{ vars.VSCVER }}" \
+            lolinternet/vscsync
+
+      - name: Reset Permissions due to container as root
+        run: |
+          echo "Reset Permissions"
+          sudo chown -R runner:docker artifacts
+          echo "Directory Contents"
+          ls -lah artifacts/
+
+      - name: Create json ZIP
+        run: zip -jD ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip artifacts/*.json
+
+      - name: Upload jsons
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
+          path: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
+
+      - name: TARchive VSCsync Extension Artifacts
+        run: |  
+          tar -cvz --remove-files \
+            -f ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz \
+            artifacts/extensions artifacts/*.json \
+            | tee ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt && \
+          ls -alh ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz*
+
+      - name: TARchive VSCsync Installer Artifacts
+        run: |  
+          tar -cvz --remove-files \
+            -f ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz \
+            artifacts/installers \
+            | tee ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt && \
+          ls -alh ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz*
+
+      - name: List remaining files in artifacts
+        run: |
+          echo "Directory Contents"
+          ls -lah artifacts/
+
+      - name: Upload extension TARchive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
+      
+      - name: Upload extension TARchive Inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
+
+      - name: Upload Installers TARchive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
+      
+      - name: Upload Installers TARchive Inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
+
+  Code:
+    needs: [Date]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Setup Git
+        run: |
+          git config user.name "$(git log -n 1 --pretty=format:%an)"
+          git config user.email "$(git log -n 1 --pretty=format:%ae)"
+          
+      - name: Update Submodules if needed
+        shell: bash
+        run: git submodule update --init --recursive --remote
+
+      - name: Bundle Repo1 code base for ${{ vars.COLLECTOR }}
+        run: |
+            git bundle create --progress ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle --all
+            ls -alht *
+
+      - name: Upload bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle
+          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle
+          if-no-files-found: error

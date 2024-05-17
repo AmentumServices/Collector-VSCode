@@ -1,7 +1,8 @@
-name: Collect
+name: Main Collection
 on:
   push:
-    branches: []
+    branches:
+      - main
   release:
     types: [edited, released]
   schedule:
