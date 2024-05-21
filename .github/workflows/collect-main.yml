@@ -43,7 +43,7 @@ jobs:
       - name: DSO Login
         run: |
           skopeo login registry1.dso.mil \
-            -u ${{ vars.REGISTRY_USER }} \
+            -u ${{ secrets.REGISTRY_USER }} \
             -p ${{ secrets.REGISTRY_TOKEN }}
       
       - name: Run Skopeo Sync
