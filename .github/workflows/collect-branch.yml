@@ -1,4 +1,4 @@
-name: Branch Collection
+name: VSCode Branch Collection
 on:
   push:
     branches-ignore:

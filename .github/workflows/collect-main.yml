@@ -1,4 +1,4 @@
-name: Main Collection
+name: VSCode Main Collection
 on:
   push:
     branches:
