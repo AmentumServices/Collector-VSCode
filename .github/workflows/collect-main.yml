@@ -106,11 +106,18 @@ jobs:
 
       - name: Extract the vsix files
         run: |
-          ls -Alh
           chmod a+x extract-vsix.sh
           cd artifacts
           ../extract-vsix.sh
-
+  
+      - name: Zip up the extracted vsix files
+        run: |
+          zip -m \
+            ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip \
+            artifacts/*.vsix \
+            | tee ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt && \
+          ls -alh ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip*
+          
       - name: TARchive VSCsync Extension Artifacts
         run: |  
           tar -cvz --remove-files \
@@ -131,14 +138,6 @@ jobs:
         run: |
           echo "Directory Contents"
           ls -lah artifacts/
-
-      - name: Zip up the extracted vsix files
-        run: |
-          zip \
-            ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip \
-            artifacts/*.vsix \
-            | tee ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt && \
-          ls -alh ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip*
 
       - name: Upload extension TARchive
         uses: actions/upload-artifact@v4
