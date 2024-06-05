@@ -32,4 +32,4 @@ while read -r line; do
       cp $line $NAME-$VER.vsix
       ;;
   esac
-done < <(find -L $1 -name "*.VSIXPackage"
+done < <(find -L $1 -name "*.VSIXPackage")
