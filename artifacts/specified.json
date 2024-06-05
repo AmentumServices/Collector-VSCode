@@ -1,5 +1,6 @@
 {
     "extensions": [
+        "alefragnani.Bookmarks",
         "atlassian.atlascode",
         "bierner.github-markdown-preview",
         "bierner.markdown-checkbox",
@@ -16,6 +17,7 @@
         "formulahendry.code-runner",
         "hashicorp.hcl",
         "hashicorp.terraform",
+        "humao.rest-client",
         "jebbs.plantuml",
         "johnpapa.vscode-peacock",
         "mindaro-dev.file-downloader",
@@ -43,6 +45,7 @@
         "redhat.vscode-commons",
         "redhat.vscode-xml",
         "redhat.vscode-yaml",
+        "ryu1kn.partial-diff",
         "twxs.cmake",
         "vincaslt.highlight-matching-tag",
         "vscjava.vscode-gradle",
