@@ -104,6 +104,11 @@ jobs:
           name: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
           path: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
 
+      - name: Extract the vsix files
+        run: |
+          cd artifacts
+          ../extract-vsix.sh
+
       - name: TARchive VSCsync Extension Artifacts
         run: |  
           tar -cvz --remove-files \
@@ -124,6 +129,14 @@ jobs:
         run: |
           echo "Directory Contents"
           ls -lah artifacts/
+
+      - name: Zip up the extracted vsix files
+        run: |
+          zip \
+            ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip \
+            artifacts/*.vsix \
+            | tee ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt && \
+          ls -alh ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip*
 
       - name: Upload extension TARchive
         uses: actions/upload-artifact@v4
@@ -152,7 +165,20 @@ jobs:
           name: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
           if-no-files-found: error
-
+          
+      - name: Upload VSIX ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
+          path: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
+          if-no-files-found: error
+          
+      - name: Upload VSIX ZIP Inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt
+          path: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt
+          if-no-files-found: error          
   Code:
     needs: [Date]
     runs-on: ubuntu-latest
