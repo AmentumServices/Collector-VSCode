@@ -106,8 +106,10 @@ jobs:
 
       - name: Extract the vsix files
         run: |
+          ls -Alh
+          chmod a+x extract-vsix.sh
           cd artifacts
-          bash -c ../extract-vsix.sh
+          ../extract-vsix.sh
 
       - name: TARchive VSCsync Extension Artifacts
         run: |  
