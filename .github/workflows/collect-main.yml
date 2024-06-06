@@ -253,3 +253,4 @@ jobs:
             *.tgz
             *.tgz.txt
             *.zip
+            *.zip.txt
