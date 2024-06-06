@@ -103,6 +103,20 @@ jobs:
           name: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
           path: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
 
+      - name: Extract the vsix files
+        run: |
+          chmod a+x extract-vsix.sh
+          cd artifacts
+          ../extract-vsix.sh
+  
+      - name: Zip up the extracted vsix files
+        run: |
+          zip -m \
+            ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip \
+            artifacts/*.vsix \
+            | tee ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt && \
+          ls -alh ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip*
+          
       - name: TARchive VSCsync Extension Artifacts
         run: |  
           tar -cvz --remove-files \
@@ -150,6 +164,20 @@ jobs:
         with:
           name: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
+          
+      - name: Upload VSIX ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
+          path: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
+          if-no-files-found: error
+          
+      - name: Upload VSIX ZIP Inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt
+          path: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt
           if-no-files-found: error
 
   Code:
