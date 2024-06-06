@@ -7,6 +7,7 @@ on:
     types: [edited, released]
   schedule:
     - cron: '0 0 * * 1' # Update weekly on Monday Midnight
+
 jobs:
   Date:
     runs-on: ubuntu-latest
@@ -178,7 +179,8 @@ jobs:
         with:
           name: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt
           path: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt
-          if-no-files-found: error          
+          if-no-files-found: error    
+
   Code:
     needs: [Date]
     runs-on: ubuntu-latest
