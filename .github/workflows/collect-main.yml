@@ -106,7 +106,6 @@ jobs:
 
       - name: Extract the vsix files
         run: |
-          chmod a+x extract-vsix.sh
           cd artifacts
           ../extract-vsix.sh
   
