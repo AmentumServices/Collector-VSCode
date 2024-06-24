@@ -273,41 +273,15 @@ jobs:
       - name: Show Artifacts
         run: ls -alh ${{ vars.COLLECTOR }}-*.*
 
-      - name: Send Bundle to Sharepoint
+      - name: Send Files to Sharepoint
         uses: cringdahl/sharepoint-file-upload-action@v1.2.0
         with:
-          file_path: "*.bundle"
+          file_path: "${{ vars.COLLECTOR }}-*.*"
           host_name: 'jacobsfederal.sharepoint.us'
           site_name: 'USCMSNISSCII.DSO'
           upload_path: 'Shared%20Documents/02.%20SW%20Modernization%20SDT/GitHub%20Artifacts/${{ vars.COLLECTOR }}'
           tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
           client_id: ${{ secrets.SHAREPOINT_APP_ID }}
           client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
-          login_endpoint: login.microsoftonline.us
-          graph_endpoint: graph.microsoft.us
-
-      - name: Send TGZ to Sharepoint
-        uses: cringdahl/sharepoint-file-upload-action@v1.2.0
-        with:
-          file_path: "*.tgz*"
-          host_name: 'jacobsfederal.sharepoint.us'
-          site_name: 'USCMSNISSCII.DSO'
-          upload_path: 'Shared%20Documents/02.%20SW%20Modernization%20SDT/GitHub%20Artifacts/${{ vars.COLLECTOR }}'
-          tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
-          client_id: ${{ secrets.SHAREPOINT_APP_ID }}
-          client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
-          login_endpoint: login.microsoftonline.us
-          graph_endpoint: graph.microsoft.us
-
-      - name: Send ZIP to Sharepoint
-        uses: cringdahl/sharepoint-file-upload-action@v1.2.0
-        with:
-          file_path: "*.zip*"
-          host_name: 'jacobsfederal.sharepoint.us'
-          site_name: 'USCMSNISSCII.DSO'
-          upload_path: 'Shared%20Documents/02.%20SW%20Modernization%20SDT/GitHub%20Artifacts/${{ vars.COLLECTOR }}'
-          tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
-          client_id: ${{ secrets.SHAREPOINT_APP_ID }}
-          client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
-          login_endpoint: login.microsoftonline.us
-          graph_endpoint: graph.microsoft.us
+          login_endpoint: 'login.microsoftonline.us'
+          graph_endpoint: 'graph.microsoft.us'
