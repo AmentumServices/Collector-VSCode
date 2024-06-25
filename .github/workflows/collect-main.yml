@@ -274,7 +274,7 @@ jobs:
         run: ls -alh ${{ vars.COLLECTOR }}-*.*
 
       - name: Send Files to Sharepoint
-        uses: cringdahl/sharepoint-file-upload-action@v1.2.0
+        uses: JacobsFederal/sharepoint-file-upload-action@v1.1.0-US
         with:
           file_path: "${{ vars.COLLECTOR }}-*.*"
           host_name: 'jacobsfederal.sharepoint.us'
@@ -283,5 +283,5 @@ jobs:
           tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
           client_id: ${{ secrets.SHAREPOINT_APP_ID }}
           client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
-          login_endpoint: 'login.microsoftonline.us'
-          graph_endpoint: 'graph.microsoft.us'
+          # login_endpoint: 'login.microsoftonline.us'
+          # graph_endpoint: 'graph.microsoft.us'
