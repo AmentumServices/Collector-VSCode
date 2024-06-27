@@ -274,7 +274,7 @@ jobs:
         run: ls -alh ${{ vars.COLLECTOR }}-*.*
 
       - name: Send Files to Sharepoint
-        uses: christo6/sharepoint-file-upload-action@Non-Standard-Endpoints
+        uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1
         with:
           file_path: "${{ vars.COLLECTOR }}-*.*"
           host_name: 'jacobsfederal.sharepoint.us'
