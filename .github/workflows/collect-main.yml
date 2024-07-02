@@ -7,7 +7,8 @@ on:
     types: [edited, released]
   schedule:
     - cron: '0 0 * * 1' # Update weekly on Monday Midnight
-
+  workflow_dispatch:
+    
 jobs:
   Date:
     runs-on: ubuntu-latest
