@@ -251,9 +251,7 @@ jobs:
           make_latest: true
           files: |
             *.bundle
-            *.tgz
             *.tgz.txt
-            *.zip
             *.zip.txt
 
   Sharepoint:
