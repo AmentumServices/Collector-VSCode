@@ -34,7 +34,7 @@ jobs:
       - name: Install Skopeo
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y skopeo
+          sudo apt-get install -y skopeo pigz
 
       - name: Login to DockerHub
         uses: docker/login-action@v3
@@ -57,7 +57,7 @@ jobs:
 
       - name: TARchive Skopeo Output
         run: |
-          tar -cvz --remove-files \
+          tar -cv -Ipigz --remove-files \
             -f ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz \
             ${{ vars.COLLECTOR }} && \
           ls -Alh ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
@@ -121,7 +121,7 @@ jobs:
 
       - name: TARchive VSCsync Extension Artifacts
         run: |
-          tar -cvz --remove-files \
+          tar -cv -Ipigz --remove-files \
             -f ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz \
             artifacts/extensions artifacts/*.json \
             | tee ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt && \
@@ -129,7 +129,7 @@ jobs:
 
       - name: TARchive VSCsync Installer Artifacts
         run: |
-          tar -cvz --remove-files \
+          tar -cv -Ipigz --remove-files \
             -f ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz \
             artifacts/installers \
             | tee ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt && \
