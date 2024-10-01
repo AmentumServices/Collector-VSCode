@@ -1,6 +1,6 @@
 # What is this?
 
-[![Release](https://github.com/jacobsfederal/Collector-VSCode/actions/workflows/collect-main.yml/badge.svg?branch=main)](https://github.com/JacobsFederal/Collector-VSCode/actions/workflows/collect-main.yml)
+[![Release](https://github.com/amentumservices/Collector-VSCode/actions/workflows/collect-main.yml/badge.svg?branch=main)](https://github.com/amentumservices/Collector-VSCode/actions/workflows/collect-main.yml)
 
 This is a project that automatically collects artifacts to ease in air-gapped transfer from the internet.
 
