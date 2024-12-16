@@ -108,22 +108,24 @@ jobs:
 
       - name: Create json ZIP
         run: |
-          zip -jD ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip artifacts/*.json &&\
-          sha256sum ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip \
-            | tee ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.sha &&\
-          ls -Alht ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip*
+          zip -jD ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip artifacts/*.json &&\
+          echo -e "\nCreating Hash" &&\
+          sha256sum ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip \
+            | tee ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip.sha &&\
+          echo -e "\nListing Files" &&\
+          ls -Alht ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip*
 
       - name: Upload jsons
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
-          path: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
+          name: ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip
+          path: ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip
 
       - name: Upload jsons Hash
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.sha
-          path: ${{ vars.COLLECTOR }}-json-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.sha
+          name: ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip.sha
+          path: ${{ vars.COLLECTOR }}-json-${{ needs.Date.outputs.Date }}.zip.sha
   
       - name: Extract the vsix files
         run: |
@@ -133,32 +135,38 @@ jobs:
       - name: Zip up the extracted vsix files
         run: |
           zip -m \
-            ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip \
+            ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip \
             artifacts/*.vsix \
-            | tee ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt && \
+            | tee ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip.txt && \
+          echo -e "\nCreating Hash" &&\
           sha256sum ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip \
             | tee ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip.sha &&\
-          ls -Alh ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip*
+          echo -e "\nListing Files" &&\
+          ls -Alh ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip*
 
       - name: TARchive VSCsync Extension Artifacts
         run: |
           tar -cv -Ipigz --remove-files \
-            -f ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz \
+            -f ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz \
             artifacts/extensions artifacts/*.json \
-            | tee ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt && \
+            | tee ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt && \
+          echo -e "\Creating Hash" &&\
           sha256sum ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz \
             | tee ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.sha &&\
-          ls -Alh ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz*
+          echo -e "\nListing Files" &&\
+          ls -Alh ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz*
 
       - name: TARchive VSCsync Installer Artifacts
         run: |
           tar -cv -Ipigz --remove-files \
-            -f ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz \
+            -f ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz \
             artifacts/installers \
-            | tee ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt && \
+            | tee ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt && \
+          echo -e "\nCreating Hash" &&\
           sha256sum ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz \
             | tee ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.sha
-          ls -Alh ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz*
+          echo -e "\nListing Files" &&\
+          ls -Alh ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz*
 
       - name: List remaining files in artifacts
         run: |
@@ -168,63 +176,63 @@ jobs:
       - name: Upload extension TARchive
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
+          name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
           if-no-files-found: error
 
       - name: Upload extension TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
       - name: Upload extension TARchive Hash
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.sha
-          path: ${{ vars.COLLECTOR }}-extensions-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.sha
+          name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.sha
+          path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz.sha
 
       - name: Upload Installers TARchive
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz
+          name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
           if-no-files-found: error
 
       - name: Upload Installers TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
       - name: Upload Installers TARchive hash
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.sha
-          path: ${{ vars.COLLECTOR }}-installers-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.tgz.sha
+          name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.sha
+          path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.sha
           if-no-files-found: error
   
       - name: Upload VSIX ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
-          path: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip
+          name: ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip
+          path: ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip
           if-no-files-found: error
 
       - name: Upload VSIX ZIP Inventory
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt
-          path: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.txt
+          name: ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip.txt
+          path: ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip.txt
           if-no-files-found: error
 
       - name: Upload VSIX ZIP Inventory
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.sha
-          path: ${{ vars.COLLECTOR }}-vsix-${{ vars.VSCVER }}-${{ needs.Date.outputs.Date }}.zip.sha
+          name: ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip.sha
+          path: ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip.sha
           if-no-files-found: error
   
   Code:
@@ -246,8 +254,10 @@ jobs:
       - name: Bundle Repo1 code base for ${{ vars.COLLECTOR }}
         run: |
           git bundle create --progress ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle --all &&\
+          echo -e "\nCreating Hash" &&\
           sha256sum ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle \
            | tee ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle.sha &&\
+          echo -e "\nListing Files" &&\
           ls -Alht *
 
       - name: Upload bundle
