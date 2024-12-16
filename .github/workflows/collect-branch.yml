@@ -53,13 +53,15 @@ jobs:
             ${{ vars.COLLECTOR }}.yml \
             ${{ vars.COLLECTOR }}
               
-      - name: TARchive Skopeo Output
+      - name: TARchive Skopeo Sync
         run: |  
           tar -cv -Ipigz --remove-files \
             -f ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz \
             ${{ vars.COLLECTOR }} && \
+          echo -e "\nCreating Hash" &&\
           sha256sum ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz \
           | tee ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz.sha &&\
+          echo -e "\nListing Files" &&\
           ls -Alh ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz*
 
       - name: Upload TARchive
@@ -265,7 +267,7 @@ jobs:
           path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle
           if-no-files-found: error
 
-      - name: Upload bundle
+      - name: Upload bundle hash
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle.sha
