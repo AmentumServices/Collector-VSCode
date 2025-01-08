@@ -28,14 +28,14 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-        
+
       - name: Install Skopeo
         run: |
           sudo apt-get update -y
           sudo apt-get install -y skopeo pigz
 
       - name: Login to DockerHub
-        uses: docker/login-action@v3 
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -45,16 +45,16 @@ jobs:
           skopeo login registry1.dso.mil \
             -u ${{ secrets.REGISTRY_USER }} \
             -p ${{ secrets.REGISTRY_TOKEN }}
-      
+
       - name: Run Skopeo Sync
         run: |
           skopeo sync \
             --src yaml --dest dir \
             ${{ vars.COLLECTOR }}.yml \
             ${{ vars.COLLECTOR }}
-              
+
       - name: TARchive Skopeo Sync
-        run: |  
+        run: |
           tar -cv -Ipigz --remove-files \
             -f ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz \
             ${{ vars.COLLECTOR }} && \
@@ -70,7 +70,7 @@ jobs:
           name: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-skopeo-${{ needs.Date.outputs.Date }}.tgz
           if-no-files-found: error
-          
+
       - name: Upload TARchive Hash
         uses: actions/upload-artifact@v4
         with:
@@ -84,20 +84,20 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-    
+
       - name: Login to DockerHub
-        uses: docker/login-action@v3 
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
+
       - name: Run Sync
         id: docker_run_sync
         run: |
           docker run \
             -v $PWD/artifacts:/artifacts \
             -e SYNCARGS="--frequency 0 --check-specified-extensions --update-extensions --update-binaries --vscode-version ${{ vars.VSCVER }}" \
-            lolinternet/vscsync
+            lolinternet/vscsync:1.0.25
 
       - name: Reset Permissions due to container as root
         run: |
@@ -131,7 +131,7 @@ jobs:
         run: |
           cd artifacts
           ../extract-vsix.sh
-  
+
       - name: Zip up the extracted vsix files
         run: |
           zip -m \
@@ -143,9 +143,9 @@ jobs:
             | tee ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip.sha &&\
           echo -e "\nListing Files" &&\
           ls -Alh ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip*
-          
+
       - name: TARchive VSCsync Extension Artifacts
-        run: |  
+        run: |
           tar -cv -Ipigz --remove-files \
             -f ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz \
             artifacts/extensions artifacts/*.json \
@@ -157,7 +157,7 @@ jobs:
           ls -Alh ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz*
 
       - name: TARchive VSCsync Installer Artifacts
-        run: |  
+        run: |
           tar -cv -Ipigz --remove-files \
             -f ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz \
             artifacts/installers \
@@ -179,7 +179,7 @@ jobs:
           name: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-extensions-${{ needs.Date.outputs.Date }}.tgz
           if-no-files-found: error
-      
+
       - name: Upload extension TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
@@ -199,7 +199,7 @@ jobs:
           name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz
           if-no-files-found: error
-      
+
       - name: Upload Installers TARchive Inventory
         uses: actions/upload-artifact@v4
         with:
@@ -213,20 +213,20 @@ jobs:
           name: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.sha
           path: ${{ vars.COLLECTOR }}-installers-${{ needs.Date.outputs.Date }}.tgz.sha
           if-no-files-found: error
-          
+
       - name: Upload VSIX ZIP
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip
           path: ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip
           if-no-files-found: error
-          
+
       - name: Upload VSIX ZIP Inventory
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip.txt
           path: ${{ vars.COLLECTOR }}-vsix-${{ needs.Date.outputs.Date }}.zip.txt
-          if-no-files-found: error    
+          if-no-files-found: error
 
       - name: Upload VSIX ZIP Inventory
         uses: actions/upload-artifact@v4
@@ -246,7 +246,7 @@ jobs:
         run: |
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
-          
+
       - name: Update Submodules if needed
         shell: bash
         run: git submodule update --init --recursive --remote
@@ -292,7 +292,6 @@ jobs:
       - name: Show Artifacts
         run: ls -Alh ${{ vars.COLLECTOR }}-*.*
 
-
   Sharepoint:
     runs-on: ubuntu-latest
     needs: [Date, Code, Skopeo, VSCodeSync]
@@ -307,7 +306,6 @@ jobs:
 
       - name: Show Artifacts
         run: ls -Alh ${{ vars.COLLECTOR }}-*.*
-
 
   MakeISO:
     runs-on: ubuntu-latest
