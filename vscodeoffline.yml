@@ -1,4 +1,4 @@
 docker.io:
     images-by-tag-regex:
-        lolinternet/vscsync: (^1.0.24)|(latest)
-        lolinternet/vscgallery: (^1.0.24)|(latest)
+        lolinternet/vscsync: (^1.0.2|45])
+        lolinternet/vscgallery: (^1.0.2[45])
