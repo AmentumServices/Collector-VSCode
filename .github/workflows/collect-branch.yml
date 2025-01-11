@@ -9,7 +9,7 @@ on:
 
 jobs:
   Date:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       Date: ${{ steps.date.outputs.date }}
     steps:
@@ -24,7 +24,7 @@ jobs:
 
   Skopeo:
     needs: [Date]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -80,7 +80,7 @@ jobs:
 
   VSCodeSync:
     needs: [Date]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -97,7 +97,7 @@ jobs:
           docker run \
             -v $PWD/artifacts:/artifacts \
             -e SYNCARGS="--frequency 0 --check-specified-extensions --update-extensions --update-binaries --vscode-version ${{ vars.VSCVER }}" \
-            lolinternet/vscsync:1.0.25
+            lolinternet/vscsync:1.0.27
 
       - name: Reset Permissions due to container as root
         run: |
@@ -237,7 +237,7 @@ jobs:
 
   Code:
     needs: [Date]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -275,7 +275,7 @@ jobs:
           if-no-files-found: error
 
   Release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [Date, Code, Skopeo, VSCodeSync]
     permissions:
       contents: write
@@ -293,7 +293,7 @@ jobs:
         run: ls -Alh ${{ vars.COLLECTOR }}-*.*
 
   Sharepoint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [Date, Code, Skopeo, VSCodeSync]
     permissions:
       contents: write
@@ -308,7 +308,7 @@ jobs:
         run: ls -Alh ${{ vars.COLLECTOR }}-*.*
 
   MakeISO:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [Date, Code, Skopeo, VSCodeSync]
     permissions:
       contents: write
