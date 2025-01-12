@@ -1,0 +1,3 @@
+[submodule "vscodeoffline-source"]
+	path = vscodeoffline-source
+	url = https://github.com/AmentumServices/vscodeoffline.git
