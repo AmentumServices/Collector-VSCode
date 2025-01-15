@@ -376,7 +376,7 @@ jobs:
       - name: Upload iso ToC artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.txt
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.txt
           path: ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.txt
           if-no-files-found: error
 
